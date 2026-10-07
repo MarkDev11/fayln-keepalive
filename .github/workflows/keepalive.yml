@@ -1,0 +1,37 @@
+name: fayln keep-alive
+
+on:
+  schedule:
+    # Tiap 15 menit, digeser dari menit :00 (hindari kongesti jadwal GitHub).
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fayln-keepalive
+  cancel-in-progress: false
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium (Playwright)
+        run: npx playwright install --with-deps chromium
+
+      - name: Wake the app
+        env:
+          TARGET_URL: 'https://fayln-api.marky.blitz.cloud/'
+          MAX_WAIT_MS: '90000'
+        run: node keepalive.mjs

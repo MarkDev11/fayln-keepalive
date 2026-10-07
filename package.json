@@ -1,0 +1,13 @@
+{
+  "name": "fayln-keepalive",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Keeps the fayln API (blitz.cloud) awake by visiting it with a real headless browser on a schedule.",
+  "scripts": {
+    "start": "node keepalive.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}

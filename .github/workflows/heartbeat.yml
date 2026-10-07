@@ -1,0 +1,32 @@
+name: repo heartbeat
+
+# Repo publik: GitHub mematikan scheduled workflow setelah 60 hari tanpa
+# aktivitas repo. Workflow ini bikin commit kecil tiap bulan supaya jadwal
+# keep-alive tidak dimatikan otomatis.
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Commit heartbeat
+        run: |
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .heartbeat
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .heartbeat
+          if git diff --staged --quiet; then
+            echo "Tidak ada perubahan."
+          else
+            git commit -m "chore(heartbeat): $(date -u +%Y-%m-%d)"
+            git push
+          fi
